@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Client from './src/components/Client.vue';
 import Produit from './src/components/Produit.vue';
-import Reglement from './src/components/Reglement.vue';
 import RegisterComponent from './src/components/RegisterComponent.vue';
 import LoginComponent from './src/components/LoginComponent.vue';
 import FactureeeesVue from '@/components/Factureeees.vue';
+import ReglementComponent from '@/components/ReglementComponent.vue';
 
 
 
@@ -15,7 +15,7 @@ const routes = [
   { path: '/login', component : LoginComponent},
   { path: '/clients', component: Client },
   { path: '/produits', component: Produit },
-  { path: '/reglements', component: Reglement },
+  { path: '/reglement', component: ReglementComponent },
   { path: '/facture', component: FactureeeesVue},
 ];
 

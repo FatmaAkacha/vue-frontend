@@ -11,6 +11,10 @@ module.exports = defineConfig({
       '/factures': {
         target: 'http://localhost:8081', 
         changeOrigin: true,
+      },
+      '/reglements': {
+        target: 'http://localhost:8083', 
+        changeOrigin: true,
     }
   }
   }
