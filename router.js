@@ -4,7 +4,7 @@ import Produit from './src/components/Produit.vue';
 import Reglement from './src/components/Reglement.vue';
 import RegisterComponent from './src/components/RegisterComponent.vue';
 import LoginComponent from './src/components/LoginComponent.vue';
-import FactureVue from '@/components/Facture.vue';
+import FactureeeesVue from '@/components/Factureeees.vue';
 
 
 
@@ -16,7 +16,7 @@ const routes = [
   { path: '/clients', component: Client },
   { path: '/produits', component: Produit },
   { path: '/reglements', component: Reglement },
-  { path: '/factures', component: FactureVue},
+  { path: '/facture', component: FactureeeesVue},
 ];
 
 const router = createRouter({

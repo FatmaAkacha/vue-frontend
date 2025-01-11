@@ -11,6 +11,7 @@
             <th>ID</th>
             <th>Client</th>
             <th>Statut</th>
+            <th>Total</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -19,6 +20,7 @@
             <td>{{ facture.id }}</td>
             <td>{{ facture.client?.name || 'Client inconnu' }}</td>
             <td>{{ facture.statut }}</td>
+            <td>{{ afficherTotalFacture(facture) }} €</td>
             <td>
               <button class="btn btn-warning" @click="openUpdateModal(facture)">Mettre à jour</button>
               <button class="btn btn-danger" @click="deleteFacture(facture.id)">Supprimer</button>
@@ -59,7 +61,7 @@
             <label>Produit ID :</label>
             <input v-model="ligne.produitID" type="number" class="form-control" required />
             <label>Quantité :</label>
-            <input v-model="ligne.quantite" type="number" class="form-control" required />
+            <input v-model="ligne.quantity" type="number" class="form-control" required />
             <button type="button" class="btn btn-danger mt-2" @click="removeFactureLigne(index)">Supprimer Ligne</button>
           </div>
           <button type="button" @click="addFactureLigne" class="btn btn-primary mt-2">Ajouter Ligne</button>
@@ -92,7 +94,7 @@ export default {
   },
   methods: {
     addFactureLigne() {
-      this.currentFacture.lignes.push({ produitID: null, quantite: 1, prixUnitaire: 0 });
+      this.currentFacture.lignes.push({ produitID: null, quantity: 1, prixUnitaire: 0 });
     },
     removeFactureLigne(index) {
       this.currentFacture.lignes.splice(index, 1);
@@ -108,6 +110,15 @@ export default {
     default: return 'Inconnu';
   }
 },
+calculerTotalFacture(facture) {
+    return facture.facturelignes.reduce((total, ligne) => {
+      return total + (ligne.quantity * ligne.price);  // Total = quantité * prix pour chaque ligne
+    }, 0);
+  },
+  afficherTotalFacture(facture) {
+    const total = this.calculerTotalFacture(facture);
+    return total.toFixed(2);  // Formatage du total avec 2 décimales
+  },
 
 submitFacture() {
   const factureToSend = {
