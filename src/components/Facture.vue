@@ -1,8 +1,7 @@
 <template>
-    <div class="factures">
+    <div class="facture">
       <h1>Gestion des Factures</h1>
   
-      <!-- Liste des factures -->
       <div v-if="factures.length">
         <h2>Liste des Factures</h2>
         <table>
@@ -29,8 +28,7 @@
           </tbody>
         </table>
       </div>
-  
-      <!-- Ajouter une nouvelle facture -->
+
       <div class="new-facture">
         <h2>Créer une nouvelle Facture</h2>
         <form @submit.prevent="createFacture">
@@ -74,7 +72,7 @@
     name: 'FactureVue',
     data() {
       return {
-        factures: [],
+        facture: [],
         newFacture: {
           clientID: null,
           total: 0,
@@ -151,4 +149,3 @@
     margin-bottom: 10px;
   }
   </style>
-  
