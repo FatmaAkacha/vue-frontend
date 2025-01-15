@@ -1,33 +1,36 @@
 <template>
-    <div class="container">
-      <h1 class="text-center">Nos Produits</h1>
-      <div class="row mt-4">
-        <transition-group name="fade" tag="div" class="row">
-          <div
-            class="col-md-4 product-card"
-            v-for="produit in produits"
-            :key="produit.id"
-          >
-            <div class="card">
-              <img :src="`http://localhost:7268${produit.photoPath}`" class="card-img-top" alt="Product Photo" />
-              <div class="card-body">
-                <h5 class="card-title">{{ produit.name }}</h5>
-                <p class="card-text">Prix: {{ produit.price }} €</p>
-                <p class="card-text">Quantité en Stock: {{ produit.stockQuantity }}</p>
-                <a class="card-text" :href="`/produits/${produit.id}`">
-          <img 
-            :src="require('@/assets/add-cart_16699600.png')" 
-            height="40" 
-            loading="lazy" 
-          />
-        </a>
-            </div>
+  <div class="container">
+    <h1 class="text-center">Nos Produits</h1>
+    <div class="row mt-4">
+      <transition-group name="fade" tag="div" class="row">
+        <div
+          class="col-md-3 product-card"
+          v-for="produit in produits"
+          :key="produit.id"
+        >
+          <div class="card">
+            <img :src="`http://localhost:7268${produit.photoPath}`" class="card-img-top" alt="Product Photo" />
+            <div class="card-body">
+              <h5 class="card-title">{{ produit.name }}</h5>
+              <p class="card-text">Prix: {{ produit.price }} €</p>
+              <p class="card-text">Quantité en Stock: {{ produit.stockQuantity }}</p>
+              <a class="card-text" :href="`/produits/${produit.id}`">
+                <img 
+                  :src="require('@/assets/add-cart_16699600.png')" 
+                  height="40" 
+                  loading="lazy" 
+                />
+              </a>
             </div>
           </div>
-        </transition-group>
-      </div>
+        </div>
+      </transition-group>
     </div>
-  </template>
+  </div>
+</template>
+
+  
+  
   
   <script>
   import ProduitService from '../services/ProduitService';
@@ -62,11 +65,15 @@
   margin-top: 80px;
   padding: 0 20px;
 }
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px; /* Ajuste l'espace entre les cartes */
+}
 
 .product-card {
-  opacity: 0;
-  animation: fadeIn 0.6s forwards;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 20px; /* Ajoute un espace vertical entre les lignes */
 }
 
 .product-card:hover {
@@ -81,6 +88,8 @@
   overflow: hidden;
   background: #fff;
   transition: transform 0.3s ease;
+  width: 138%;
+    margin-left: -25%;
 }
 
 .card:hover {
@@ -93,6 +102,7 @@
   object-fit: cover;
   border-bottom: 2px solid #f1f1f1;
 }
+
 
 .card-body {
   padding: 20px;

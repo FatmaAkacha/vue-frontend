@@ -1,7 +1,9 @@
 <template>
+    
     <div class="dashboard">
-      <h1 class="text-center my-4">Tableau de Bord</h1>
-  
+        <br/><br/><br/>
+        <h1 class="text-center my-4">Tableau de Bord</h1>
+        <br/><br/>
       <!-- Cartes pour les données globales -->
       <div class="row">
         <div class="card-container" v-for="(card, index) in cards" :key="index">
@@ -23,8 +25,43 @@
             <button class="close-btn" @click="closeModal">×</button>
           </div>
           <div class="modal-body">
-            <!-- Si modalData est un tableau, afficher sous forme de tableau -->
-            <table v-if="Array.isArray(modalData)">
+            <!-- Affichage conditionnel pour les sous-tableaux -->
+            <table v-if="modalData && modalTitle === 'Factures par statut'">
+              <thead>
+                <tr>
+                  <th>Statut</th>
+                  <th>Détails</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in modalData" :key="index">
+                  <td>{{ item.statut }}</td>
+                  <td>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Date Facture</th>
+                          <th>Client</th>
+                          <th>Statut</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(facture, i) in item.factures" :key="i">
+                          <td>{{ facture.id }}</td>
+                          <td>{{ facture.dateFacture }}</td>
+                          <td>{{ facture.clientID }}</td>
+                          <td>{{ facture.statut }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+  
+            <!-- Autres affichages conditionnels -->
+            <table v-else-if="Array.isArray(modalData)">
               <thead>
                 <tr>
                   <th v-for="(header, index) in tableHeaders" :key="index">{{ header }}</th>
@@ -37,7 +74,6 @@
               </tbody>
             </table>
   
-            <!-- Si modalData n'est pas un tableau (ex. chiffre d'affaires, dettes), afficher la valeur -->
             <div v-else>
               <p>{{ modalData }}</p>
             </div>
@@ -62,7 +98,6 @@
           { title: "Clients les plus fidèles", key: "mostLoyalClients", value: "" },
           { title: "Factures par statut", key: "facturesByStatus", value: "" },
           { title: "Chiffre d'affaires global", key: "globalChiffreAffaires", value: "" },
-          { title: "Dettes par client", key: "dettesParClient", value: "" },
         ],
         modalTitle: "",
         modalData: null,
@@ -72,7 +107,6 @@
     },
     methods: {
       fetchData() {
-        // Appels API pour remplir les cartes
         FacturServices.getMostRequestedProducts().then((response) => {
           this.cards.find((card) => card.key === "mostRequestedProducts").value = `${response.data.length} Produits`;
         });
@@ -89,48 +123,39 @@
           this.cards.find((card) => card.key === "globalChiffreAffaires").value = `${response.data} €`;
         });
   
-        FacturServices.getDettesParClient().then((response) => {
-          this.cards.find((card) => card.key === "dettesParClient").value = `${response.data.length} Clients avec dettes`;
-        });
+  
       },
       openModal(key) {
-        // Définit le titre et charge les données pour la modale
         this.modalTitle = this.cards.find((card) => card.key === key).title;
   
-        // Appel API en fonction de la clé pour remplir la modale
         switch (key) {
           case "mostRequestedProducts":
             FacturServices.getMostRequestedProducts().then((response) => {
               this.modalData = response.data;
-              this.tableHeaders = ['Id','Nom de Produit', 'Quantité demandée'];
+              this.tableHeaders = ['Id', 'Nom de Produit', 'Quantité demandée'];
             }).catch(error => this.handleError(error));
             break;
           case "mostLoyalClients":
             FacturServices.getMostLoyalClients().then((response) => {
               this.modalData = response.data;
-              this.tableHeaders = ['Id Client', 'Nombre Factures','Client', 'Fidélité'];
+              this.tableHeaders = ['Id Client', 'Nombre Factures', 'Client', 'Fidélité'];
             }).catch(error => this.handleError(error));
             break;
-            case "facturesByStatus":
-          FacturServices.getFacturesByStatus().then((response) => {
-            this.modalData = Object.entries(response.data).map(([status, count]) => {
-              return { statut: status, nombre: count };
-            });
-            this.tableHeaders = ['Statut', 'Nombre de factures'];
-          }).catch(error => this.handleError(error));
-          break;
+          case "facturesByStatus":
+            FacturServices.getFacturesByStatus().then((response) => {
+              this.modalData = Object.entries(response.data).map(([status, factures]) => {
+                return { statut: status, factures: factures };
+              });
+              this.tableHeaders = ['Statut', 'Nombre de factures'];
+            }).catch(error => this.handleError(error));
+            break;
           case "globalChiffreAffaires":
             FacturServices.getGlobalChiffreAffaires().then((response) => {
-              this.modalData = `${response.data} €`;  // Afficher comme texte
-              this.tableHeaders = [];  // Pas de tableau
+              this.modalData = `${response.data} €`;
+              this.tableHeaders = [];
             }).catch(error => this.handleError(error));
             break;
-          case "dettesParClient":
-            FacturServices.getDettesParClient().then((response) => {
-              this.modalData = `${response.data} Clients avec dettes`;  // Afficher comme texte
-              this.tableHeaders = [];  // Pas de tableau
-            }).catch(error => this.handleError(error));
-            break;
+       
           default:
             this.modalData = "Aucune donnée disponible.";
             this.tableHeaders = [];
@@ -142,7 +167,6 @@
         this.isModalOpen = false;
       },
       handleError(error) {
-        // Gestion des erreurs
         console.error("Erreur lors de la récupération des données : ", error.response ? error.response.data : error.message);
         this.modalData = "Erreur de récupération des données.";
       }
@@ -155,117 +179,193 @@
   
   <style>
   /* Styles généraux */
-  .dashboard {
-    padding: 20px;
+.dashboard {
+  padding: 20px;
+  background-color: white;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+
+.text-center {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+/* Styles des cartes */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.card-container {
+  width: 48%;  
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.card-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  text-align: center;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #34495e;
+  margin-bottom: 8px;
+}
+
+.card-text {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #7f8c8d;
+  margin-bottom: 12px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #3498db;
+}
+
+/* Styles pour la modale */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 30px;
+  width: 85%;
+  max-width: 700px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h5 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #e74c3c;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.modal-footer {
+  text-align: right;
+}
+
+.modal-footer .btn {
+  background-color: #e74c3c;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+table, th, td {
+  border: 1px solid #ecf0f1;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+th {
+  background-color: #f4f6f7;
+  font-weight: 500;
+  color: #34495e;
+}
+
+td {
+  color: #7f8c8d;
+}
+
+/* Animation d'apparition pour la modale */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
-  
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Media Queries pour les petits écrans */
+@media (max-width: 768px) {
   .text-center {
-    text-align: center;
+    font-size: 1.4rem;
   }
-  
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  /* Styles des cartes */
+
   .card-container {
-    width: 300px;
+    width: 100%;  /* Sur petits écrans, les cartes s'affichent en une seule colonne */
   }
-  
-  .card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .card-title {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .card-text {
-    margin: 10px 0;
-  }
-  
-  .btn {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Styles pour la modale */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
+
   .modal-content {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 500px;
-    max-width: 90%;
+    width: 90%;
   }
-  
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  
-  .modal-body {
-    margin-bottom: 20px;
-    font-family: monospace;
-    font-size: 14px;
-  }
-  
-  .modal-footer {
-    text-align: right;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  table, th, td {
-    border: 1px solid #ddd;
-  }
-  
-  th, td {
-    padding: 8px;
-    text-align: left;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
+}
+
   </style>
   
