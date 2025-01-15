@@ -1,18 +1,20 @@
 <template>
   <div class="container">
-    <h1 class="text-center">Reglements List</h1>
-
-    <!-- Table to Display Reglements -->
-    <table class="table table-striped">
+    <h1 class="text-center">Liste des Réglements</h1>
+    <div class="text mt-4">
+      <button @click="openCreateModal" class="btn success">Ajouter un nouveau Réglement</button>
+    </div>
+    <br>
+    <table class="table ">
       <thead>
         <tr>
           <th>Id</th>
           <th>Facture Id</th>
           <th>Montant</th>
-          <th>Mode Paiement</th>
+          <th>Mode de Paiement</th>
           <th>Statut</th>
           <th>Reste à payer</th>
-          <th>Date Reglement</th>
+          <th>Date de Réglement</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -26,17 +28,14 @@
           <td>{{ reglement.resteAPayer }}</td>
           <td>{{ new Date(reglement.dateReglement).toLocaleString() }}</td> <!-- Formate la date -->
           <td>
-            <button class="btn btn-warning" @click="openUpdateModal(reglement)">Update</button>
-            <button class="btn btn-danger" @click="deleteReglement(reglement.id)">Delete</button>
+            <button class="btn warning" @click="openUpdateModal(reglement)">Modifier</button>&nbsp;
+            <button class="btn danger" @click="deleteReglement(reglement.id)">Supprimer</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Button to Add New Reglement -->
-    <div class="text-center mt-4">
-      <button @click="openCreateModal" class="btn btn-success">Add New Reglement</button>
-    </div>
+
 
     <!-- Modal for Create/Update Reglement -->
     <AppModal v-if="showModal" @close="closeModal">
@@ -99,7 +98,7 @@
         </form>
       </template>
       <template #footer>
-        <button class="btn btn-secondary" @click="closeModal">Cancel</button>
+        <button class="btn btn-secondary" @click="closeModal">Annuler</button>
       </template>
     </AppModal>
   </div>
@@ -218,3 +217,31 @@ export default {
   }
 };
 </script>
+
+<style>
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+.container{
+    margin-top:100px;
+  }
+  .boutons{
+    align-content: center;
+  }
+  
+  .danger{
+    background-color: #ff6961 !important;
+  }
+  .warning{
+    background-color: #FAC900 !important;
+  }
+  .success{
+    background-color: #99c5c4 !important;
+  }
+</style>

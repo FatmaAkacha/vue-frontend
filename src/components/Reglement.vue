@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-      <h1 class="text-center">Reglements List</h1>
+      <h1 class="text-center">Réglements List</h1>
   
       <!-- Table to Display Reglements -->
       <table class="table table-striped">
@@ -84,7 +84,7 @@
             </div>
             
             <div class="form-group">
-              <label>Date Reglement:</label>
+              <label>Date Réglement:</label>
               <input
                 type="datetime-local"
                 v-model="currentReglement.dateReglement"

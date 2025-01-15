@@ -4,7 +4,7 @@ module.exports = defineConfig({
   devServer:{
     port: 8080,
     proxy: {
-      '/users': {
+      '/auth': {
           target: 'http://localhost:8089',
           changeOrigin: true,
       },
@@ -15,6 +15,10 @@ module.exports = defineConfig({
       '/reglements': {
         target: 'http://localhost:8083', 
         changeOrigin: true,
+    },
+    '/login': {
+      target: 'http://localhost:9001', 
+      changeOrigin: true,
     }
   }
   }

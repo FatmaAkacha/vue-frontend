@@ -4,12 +4,16 @@
     
     <!-- Liste des factures -->
     <div v-if="factures.length">
-      <h2>Liste des Factures</h2>
-      <table class="table table-striped">
+      <h2 class="text-center liste">Liste des Factures</h2>
+      <div class="text mt-4">
+      <button @click="openCreateModal" class="btn success">Ajouter une nouvelle Facture</button>
+    </div>
+    <br>
+      <table class="table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Client</th>
+            <th>Clients</th>
             <th>Statut</th>
             <th>Total</th>
             <th>Actions</th>
@@ -22,17 +26,12 @@
             <td>{{ facture.statut }}</td>
             <td>{{ afficherTotalFacture(facture) }} €</td>
             <td>
-              <button class="btn btn-warning" @click="openUpdateModal(facture)">Mettre à jour</button>
-              <button class="btn btn-danger" @click="deleteFacture(facture.id)">Supprimer</button>
+              <button class="btn warning" @click="openUpdateModal(facture)">Modifier</button>&nbsp;
+              <button class="btn danger" @click="deleteFacture(facture.id)">Supprimer</button>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <!-- Ajouter une nouvelle facture -->
-    <div class="text-center mt-4">
-      <button @click="openCreateModal" class="btn btn-success">Ajouter une Facture</button>
     </div>
 
     <!-- Modal de création/mise à jour -->
@@ -209,4 +208,23 @@ submitFacture() {
   text-align: left;
   border: 1px solid #ddd;
 }
+.container{
+    margin-top:100px;
+  }
+  .boutons{
+    align-content: center;
+  }
+  
+  .danger{
+    background-color: #ff6961 !important;
+  }
+  .warning{
+    background-color: #FAC900 !important;
+  }
+  .success{
+    background-color: #99c5c4 !important;
+  }
+  .liste{
+    padding-top: 20px;
+  }
 </style>

@@ -1,14 +1,17 @@
 <template>
     <div class="container">
-      <h1 class="text-center">Clients List</h1>
-  
-      <table class="table table-striped">
+      <h1 class="text-center">Liste Des Clients</h1>
+      <div class="text mt-4">
+        <button @click="openCreateModal" class="btn success">Ajouter Nouveau Client</button>
+      </div>
+  <br>
+      <table class="table">
         <thead>
           <tr>
             <th>Id</th>
-            <th>Name</th>
+            <th>Nom</th>
             <th>Email</th>
-            <th>Phone</th>
+            <th>Téléphone</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -18,18 +21,15 @@
             <td>{{ client.name }}</td>
             <td>{{ client.email }}</td>
             <td>{{ client.phone }}</td>
-            <td>
-              <button class="btn btn-warning" @click="openUpdateModal(client)">Update</button>
-              <button class="btn btn-danger" @click="deleteClient(client.id)">Delete</button>
+            <td class= "boutons">
+              <button class="btn warning " @click="openUpdateModal(client)">Modifier</button>&nbsp;
+              <button class="btn danger" @click="deleteClient(client.id)">Supprimer</button>
             </td>
           </tr>
         </tbody>
       </table>
   
-      <div class="text-center mt-4">
-        <button @click="openCreateModal" class="btn btn-success">Add New Client</button>
-      </div>
-  
+      
       <AppModal v-if="showModal" @close="closeModal">
         <template #header>
           <h3>{{ modalTitle }}</h3>
@@ -37,7 +37,7 @@
         <template #body>
           <form @submit.prevent="submitClient">
             <div class="form-group">
-              <label>Name:</label>
+              <label>Nom:</label>
               <input type="text" v-model="currentClient.name" class="form-control" required />
             </div>
             <div class="form-group">
@@ -45,14 +45,14 @@
               <input type="email" v-model="currentClient.email" class="form-control" required />
             </div>
             <div class="form-group">
-              <label>Phone:</label>
+              <label>Téléphone:</label>
               <input type="text" v-model="currentClient.phone" class="form-control" required />
             </div>
             <button type="submit" class="btn btn-success mt-3">{{ modalButtonText }}</button>
           </form>
         </template>
         <template #footer>
-          <button class="btn btn-secondary" @click="closeModal">Cancel</button>
+          <button class="btn btn-secondary" @click="closeModal">Annuler</button>
         </template>
       </AppModal>
     </div>
@@ -82,7 +82,7 @@
             this.clients = response.data;
           })
           .catch((error) => {
-            console.error('Failed to fetch clients:', error);
+            console.error('Impossible de récupérer les clients:', error);
           });
       },
   
@@ -108,7 +108,6 @@
   
       submitClient() {
         if (this.isUpdateMode) {
-          // Mettre à jour un client
           ClientService.updateClient(this.currentClient.id, this.currentClient)
             .then((response) => {
               const updatedClient = response.data;
@@ -120,7 +119,7 @@
               this.closeModal();
             })
             .catch((error) => {
-              console.error('Failed to update client:', error);
+              console.error('Échec de la mise à jour du client:', error);
             });
         } else {
           ClientService.createClient(this.currentClient)
@@ -129,19 +128,19 @@
               this.closeModal();
             })
             .catch((error) => {
-              console.error('Failed to create client:', error);
+              console.error('Échec de la création du client:', error);
             });
         }
       },
   
       deleteClient(id) {
-        if (confirm('Do you really want to delete?')) {
+        if (confirm('Voulez-vous vraiment supprimer?')) {
           ClientService.deleteClient(id)
             .then(() => {
               this.clients = this.clients.filter((client) => client.id !== id);
             })
             .catch((error) => {
-              console.error('Failed to delete client:', error);
+              console.error('Impossible de supprimer le client:', error);
             });
         }
       },
@@ -151,3 +150,21 @@
     },
   };
   </script>
+  <style>
+  .container{
+    margin-top:100px;
+  }
+  .boutons{
+    align-content: center;
+  }
+  
+  .danger{
+    background-color: #ff6961 !important;
+  }
+  .warning{
+    background-color: #FAC900 !important;
+  }
+  .success{
+    background-color: #99c5c4 !important;
+  }
+  </style>
