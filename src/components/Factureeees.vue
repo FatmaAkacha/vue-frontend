@@ -1,9 +1,6 @@
 <template>
-  <div class="factures">
-    <h1>Gestion des Factures</h1>
-    
-    <!-- Liste des factures -->
-    <div v-if="factures.length">
+  <div class="container">
+      <div v-if="factures.length">
       <h2 class="text-center liste">Liste des Factures</h2>
       <div class="text mt-4">
       <button @click="openCreateModal" class="btn success">Ajouter une nouvelle Facture</button>
@@ -200,8 +197,9 @@ submitFacture() {
 
 <style>
 .table {
-  width: 100%;
+  width: 80%;
   border-collapse: collapse;
+
 }
 .table th, .table td {
   padding: 10px;
@@ -210,6 +208,7 @@ submitFacture() {
 }
 .container{
     margin-top:100px;
+    margin-left: 12%;
   }
   .boutons{
     align-content: center;
@@ -224,7 +223,5 @@ submitFacture() {
   .success{
     background-color: #99c5c4 !important;
   }
-  .liste{
-    padding-top: 20px;
-  }
+
 </style>
