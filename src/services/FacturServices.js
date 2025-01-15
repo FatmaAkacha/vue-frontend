@@ -47,24 +47,24 @@ class FacturServices {
 
     // Obtenir le chiffre d'affaires global
     getGlobalChiffreAffaires() {
-        return axios.get(`${FACTURE_API_Base_URL}/global-chiffre-affaires`);
+        return axios.get(`${FACTURE_API_Base_URL}/factures/global-chiffre-affaires`);
     }
 
     // Obtenir le chiffre d'affaires pour une année spécifique
     getChiffreAffairesByYear(year) {
-        return axios.get(`${FACTURE_API_Base_URL}/chiffre-affaires`, {
+        return axios.get(`${FACTURE_API_Base_URL}/factures/chiffre-affaires`, {
             params: { year },
         });
     }
 
     // Récupérer les factures groupées par statut
     getFacturesByStatus() {
-        return axios.get(`${FACTURE_API_Base_URL}/status`);
+        return axios.get(`${FACTURE_API_Base_URL}/factures/status`);
     }
 
     // Obtenir les dettes par client
     getDettesParClient() {
-        return axios.get(`${FACTURE_API_Base_URL}/dettes`);
+        return axios.get(`${FACTURE_API_Base_URL}/factures/dettes`);
     }
     // Mettre à jour une facture complète
     updateFacture(id, facture) {

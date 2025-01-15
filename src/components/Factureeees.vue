@@ -53,7 +53,7 @@
               <option value="PENDING">En Attente</option>
             </select>
           </div>
-
+<br>
           <!-- Lignes de Facture -->
           <h3>Lignes de Facture</h3>
           <div v-for="(ligne, index) in currentFacture.lignes" :key="index" class="form-group">
@@ -63,7 +63,7 @@
             <input v-model="ligne.quantity" type="number" class="form-control" required />
             <button type="button" class="btn btn-danger mt-2" @click="removeFactureLigne(index)">Supprimer Ligne</button>
           </div>
-          <button type="button" @click="addFactureLigne" class="btn btn-primary mt-2">Ajouter Ligne</button>
+          <button type="button" @click="addFactureLigne" class="btn btn-primary mt-2">Ajouter Ligne</button> &nbsp;
           <button type="submit" class="btn btn-success mt-3">{{ modalButtonText }}</button>
         </form>
       </template>

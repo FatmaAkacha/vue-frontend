@@ -14,8 +14,14 @@
                 <h5 class="card-title">{{ produit.name }}</h5>
                 <p class="card-text">Prix: {{ produit.price }} €</p>
                 <p class="card-text">Quantité en Stock: {{ produit.stockQuantity }}</p>
-                <a href="#" class="btn btn-primary">Voir Détails</a>
-              </div>
+                <a class="card-text" :href="`/produits/${produit.id}`">
+          <img 
+            :src="require('@/assets/add-cart_16699600.png')" 
+            height="40" 
+            loading="lazy" 
+          />
+        </a>
+            </div>
             </div>
           </div>
         </transition-group>
@@ -52,41 +58,94 @@
   </script>
   
   <style scoped>
-  .container {
-    margin-top: 100px;
-  }
-  
-  .product-card {
-    opacity: 0;
-    animation: fadeIn 0.5s forwards;
-  }
-  
-  .card {
-    margin-bottom: 20px;
-  }
-  
+.container {
+  margin-top: 80px;
+  padding: 0 20px;
+}
+
+.product-card {
+  opacity: 0;
+  animation: fadeIn 0.6s forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card-img-top {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+  border-bottom: 2px solid #f1f1f1;
+}
+
+.card-body {
+  padding: 20px;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.card-text:last-child {
+  margin-bottom: 0;
+}
+
+.card-text a {
+  display: inline-block;
+  margin-top: 20px;
+}
+
+.card-text img {
+  width: 40px;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.card-text img:hover {
+  transform: scale(1.1);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.6s ease-in-out;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
   .card-img-top {
-    height: 200px;
-    object-fit: cover;
+    height: 180px;
   }
-  
-  .card-body {
-    text-align: center;
-  }
-  
-  .card-title {
-    font-size: 1.2rem;
-  }
-  
-  .card-text {
-    font-size: 1rem;
-    margin: 10px 0;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-  }
+}
+
   
   @keyframes fadeIn {
     from {
