@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-      <div v-if="factures.length">
+    <div v-if="factures.length">
       <h2 class="text-center liste">Liste des Factures</h2>
       <div class="text mt-4">
-      <button @click="openCreateModal" class="btn success">Ajouter une nouvelle Facture</button>
-    </div>
-    <br>
+        <button @click="openCreateModal" class="btn success">Ajouter une nouvelle Facture</button>
+      </div>
+      <br>
       <table class="table">
         <thead>
           <tr>
@@ -13,6 +13,7 @@
             <th>Clients</th>
             <th>Statut</th>
             <th>Total</th>
+            <th>Devise</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -20,8 +21,9 @@
           <tr v-for="facture in factures" :key="facture.id">
             <td>{{ facture.id }}</td>
             <td>{{ facture.client?.name || 'Client inconnu' }}</td>
-            <td>{{ facture.statut }}</td>
+            <td>{{ formatStatus(facture.status) }}</td>
             <td>{{ afficherTotalFacture(facture) }} €</td>
+            <td>{{ facture.currency }}</td>
             <td>
               <button class="btn warning" @click="openUpdateModal(facture)">Modifier</button>&nbsp;
               <button class="btn danger" @click="deleteFacture(facture.id)">Supprimer</button>
@@ -50,7 +52,15 @@
               <option value="PENDING">En Attente</option>
             </select>
           </div>
-<br>
+          <div class="form-group">
+            <label>Devise :</label>
+            <select v-model="currentFacture.currency" class="form-control" required>
+              <option v-for="currency in currencies" :key="currency" :value="currency">
+                {{ currency }}
+              </option>
+            </select>
+          </div>
+          <br />
           <!-- Lignes de Facture -->
           <h3>Lignes de Facture</h3>
           <div v-for="(ligne, index) in currentFacture.lignes" :key="index" class="form-group">
@@ -74,6 +84,7 @@
 <script>
 import AppModal from '../components/AppModal';
 import FacturServices from '@/services/FacturServices';
+import currencyService from '@/services/currencyService';
 
 export default {
   name: 'FactureeeesVue',
@@ -81,84 +92,74 @@ export default {
   data() {
     return {
       factures: [], // Liste des factures
-      currentFacture: { id: null, clientID: null, status: 'PENDING', lignes: [] }, // Facture en cours
-      showModal: false, // Contrôle de l'affichage du modal
-      modalTitle: 'Ajouter Facture', // Titre du modal
-      modalButtonText: 'Ajouter', // Texte du bouton du modal
-      isUpdateMode: false, // Mode de mise à jour
+      currencies: [], // Liste des devises disponibles
+      currentFacture: { id: null, clientID: null, status: 'PENDING', currency: 'EUR', lignes: [] },
+      showModal: false,
+      modalTitle: 'Ajouter Facture',
+      modalButtonText: 'Ajouter',
+      isUpdateMode: false,
     };
   },
   methods: {
+    fetchCurrencies() {
+      currencyService.getAllCurrencies()
+        .then((response) => {
+          this.currencies = Object.keys(response.data.data); // Récupère les devises
+        })
+        .catch((error) => console.error('Erreur lors de la récupération des devises:', error));
+    },
     addFactureLigne() {
       this.currentFacture.lignes.push({ produitID: null, quantity: 1, prixUnitaire: 0 });
     },
     removeFactureLigne(index) {
       this.currentFacture.lignes.splice(index, 1);
     },
-  
     formatStatus(status) {
-  const normalizedStatus = status ? status.trim().toUpperCase() : '';
+      const normalizedStatus = status ? status.trim().toUpperCase() : '';
+      switch (normalizedStatus) {
+        case 'PAID':
+          return 'Payée';
+        case 'UNPAID':
+          return 'Non Payée';
+        case 'PENDING':
+          return 'En Attente';
+        default:
+          return 'Inconnu';
+      }
+    },
+    calculerTotalFacture(facture) {
+      return facture.facturelignes.reduce((total, ligne) => {
+        return total + ligne.quantity * ligne.price; // Total = quantité * prix pour chaque ligne
+      }, 0);
+    },
+    afficherTotalFacture(facture) {
+      const total = this.calculerTotalFacture(facture);
+      return total.toFixed(2); // Formatage du total avec 2 décimales
+    },
+    submitFacture() {
+      const factureToSend = {
+        ...this.currentFacture,
+        facturelignes: this.currentFacture.lignes,
+      };
 
-  switch (normalizedStatus) {
-    case 'PAID': return 'Payée';
-    case 'UNPAID': return 'Non Payée';
-    case 'PENDING': return 'En Attente';
-    default: return 'Inconnu';
-  }
-},
-calculerTotalFacture(facture) {
-    return facture.facturelignes.reduce((total, ligne) => {
-      return total + (ligne.quantity * ligne.price);  // Total = quantité * prix pour chaque ligne
-    }, 0);
-  },
-  afficherTotalFacture(facture) {
-    const total = this.calculerTotalFacture(facture);
-    return total.toFixed(2);  // Formatage du total avec 2 décimales
-  },
-
-submitFacture() {
-  const factureToSend = {
-    ...this.currentFacture,
-    facturelignes: this.currentFacture.lignes, // Assurez-vous d'envoyer 'facturelignes' et non 'lignes'
-  };
-
-  if (this.isUpdateMode) {
-    if (this.isStatusUpdateOnly()) {
-      FacturServices.updateFactureStatus(this.currentFacture.id, this.currentFacture.status)
-        .then(() => {
-          this.fetchFactures();
-          this.closeModal();
-        })
-        .catch((error) => console.error('Erreur lors de la mise à jour du statut de la facture:', error));
-    } else {
-      FacturServices.updateFacture(this.currentFacture.id, factureToSend)
-        .then(() => {
-          this.fetchFactures();
-          this.closeModal();
-        })
-        .catch((error) => console.error('Erreur lors de la mise à jour de la facture:', error));
-    }
-  } else {
-    FacturServices.createFacture(factureToSend)
-      .then(() => {
-        this.fetchFactures();
-        this.closeModal();
-      })
-      .catch((error) => console.error('Erreur lors de la création de la facture:', error));
-  }
-},
-
-    isStatusUpdateOnly() {
-      const originalFacture = this.factures.find(facture => facture.id === this.currentFacture.id);
-      if (!originalFacture) return false;
-
-      return (
-        originalFacture.status !== this.currentFacture.status &&
-        JSON.stringify({ ...originalFacture, status: this.currentFacture.status }) === JSON.stringify(this.currentFacture)
-      );
+      if (this.isUpdateMode) {
+        FacturServices.updateFacture(this.currentFacture.id, factureToSend)
+          .then(() => {
+            this.fetchFactures();
+            this.closeModal();
+          })
+          .catch((error) => console.error('Erreur lors de la mise à jour de la facture:', error));
+      } else {
+        FacturServices.createFacture(factureToSend)
+          .then(() => {
+            this.fetchFactures();
+            this.closeModal();
+          })
+          .catch((error) => console.error('Erreur lors de la création de la facture:', error));
+      }
     },
     openCreateModal() {
-      this.currentFacture = { id: null, clientID: null, status: 'PENDING', lignes: [] };
+      this.currentFacture = { id: null, clientID: null, status: 'PENDING', currency: 'EUR', lignes: [] };
       this.showModal = true;
       this.modalTitle = 'Ajouter Facture';
       this.modalButtonText = 'Ajouter';
@@ -191,6 +192,7 @@ submitFacture() {
   },
   mounted() {
     this.fetchFactures();
+    this.fetchCurrencies();
   },
 };
 </script>
@@ -199,29 +201,24 @@ submitFacture() {
 .table {
   width: 80%;
   border-collapse: collapse;
-
 }
-.table th, .table td {
+.table th,
+.table td {
   padding: 10px;
   text-align: left;
   border: 1px solid #ddd;
 }
-.container{
-    margin-top:100px;
-    margin-left: 12%;
-  }
-  .boutons{
-    align-content: center;
-  }
-  
-  .danger{
-    background-color: #ff6961 !important;
-  }
-  .warning{
-    background-color: #FAC900 !important;
-  }
-  .success{
-    background-color: #99c5c4 !important;
-  }
-
+.container {
+  margin-top: 100px;
+  margin-left: 12%;
+}
+.danger {
+  background-color: #ff6961 !important;
+}
+.warning {
+  background-color: #fac900 !important;
+}
+.success {
+  background-color: #99c5c4 !important;
+}
 </style>

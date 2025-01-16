@@ -19,6 +19,10 @@ module.exports = defineConfig({
     '/login': {
       target: 'http://localhost:9001', 
       changeOrigin: true,
+    },
+    '/currencies':{
+      target: 'http://localhost:8084', 
+      changeOrigin: true,
     }
   }
   }
