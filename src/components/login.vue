@@ -65,7 +65,7 @@
   
           const data = await response.json();
           console.log("Login successful:", data);
-          this.$router.push("/clients");
+          this.$router.push("/dashboard");
         } catch (error) {
           console.error("An error occurred during login:", error);
         }

@@ -21,7 +21,7 @@
           <tr v-for="facture in factures" :key="facture.id">
             <td>{{ facture.id }}</td>
             <td>{{ facture.client?.name || 'Client inconnu' }}</td>
-            <td>{{ formatStatus(facture.status) }}</td>
+            <td>{{ facture.statut }}</td>
             <td>{{ afficherTotalFacture(facture) }} €</td>
             <td>{{ facture.currency }}</td>
             <td>
@@ -46,7 +46,7 @@
           </div>
           <div class="form-group">
             <label>Statut :</label>
-            <select v-model="currentFacture.status" class="form-control" required>
+            <select v-model="currentFacture.statut" class="form-control" required>
               <option value="PAID">Payée</option>
               <option value="UNPAID">Non Payée</option>
               <option value="PENDING">En Attente</option>
@@ -114,9 +114,9 @@ export default {
     removeFactureLigne(index) {
       this.currentFacture.lignes.splice(index, 1);
     },
-    formatStatus(status) {
-      const normalizedStatus = status ? status.trim().toUpperCase() : '';
-      switch (normalizedStatus) {
+    formatStatut(statut) {
+      const normalizedStatut = statut ? statut.trim().toUpperCase() : '';
+      switch (normalizedStatut) {
         case 'PAID':
           return 'Payée';
         case 'UNPAID':

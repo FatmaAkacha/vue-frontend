@@ -13,7 +13,6 @@
           <th>Montant</th>
           <th>Mode de Paiement</th>
           <th>Statut</th>
-          <th>Reste à payer</th>
           <th>Date de Réglement</th>
           <th>Actions</th>
         </tr>
@@ -25,7 +24,6 @@
           <td>{{ reglement.montant }}</td>
           <td>{{ reglement.modePaiement }}</td>
           <td>{{ reglement.statut }}</td>
-          <td>{{ reglement.resteAPayer }}</td>
           <td>{{ new Date(reglement.dateReglement).toLocaleString() }}</td> <!-- Formate la date -->
           <td>
             <button class="btn warning" @click="openUpdateModal(reglement)">Modifier</button>&nbsp;

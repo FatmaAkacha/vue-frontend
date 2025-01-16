@@ -122,7 +122,7 @@
               console.error('Échec de la mise à jour du client:', error);
             });
         } else {
-          ClientService.createClient(this.currentClient)
+          ClientService.createClients(this.currentClient)
             .then((response) => {
               this.clients.push(response.data); 
               this.closeModal();
